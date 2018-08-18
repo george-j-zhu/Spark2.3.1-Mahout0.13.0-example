@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.sparkexample</groupId>
+    <artifactId>spark-mahout</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <name>${project.artifactId}</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spark.version>2.3.1</spark.version>
+        <scala.version>2.11</scala.version>
+        <mahout.version>0.13.0</mahout.version>
+        <graphframes.version>0.5.0-spark2.1-s_${scala.version}</graphframes.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala.version}</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.mahout</groupId>
+            <artifactId>mahout-math</artifactId>
+            <version>${mahout.version}</version>
+        </dependency>
+
+        <!-- Mahout Bindings -->
+        <dependency>
+            <groupId>org.apache.mahout</groupId>
+            <artifactId>mahout-spark_2.10</artifactId>
+            <version>${mahout.version}</version>
+        </dependency>
+
+	<dependency>
+    	    <groupId>org.apache.commons</groupId>
+    	    <artifactId>commons-math3</artifactId>
+    	    <version>3.2</version>
+	</dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.22</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+	<repository>
+	    <id>Spark repository</id>
+	    <url>https://dl.bintray.com/spark-packages/maven/</url>
+	</repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.ensime.maven.plugins</groupId>
+                <artifactId>ensime-maven</artifactId>
+                <version>1.2.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.3.2</version>
+                <executions>
+                    <execution>
+                        <id>scala-compile-first</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>scala-test-compile</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <recompileMode>incremental</recompileMode>
+                    <scalaVersion>${scala.version}</scalaVersion>
+                    <jvmArgs>
+                        <javacArg>-Xlint:unchecked</javacArg>
+                        <javacArg>-Xlint:deprecation</javacArg>
+                    </jvmArgs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>run-local</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>
+                                ${env.SPARK_HOME}/bin/spark-submit
+                            </executable>
+                            <arguments>
+                                <argument>--packages</argument>
+                                <argument>org.apache.mahout:mahout-spark_2.10:${mahout.version},org.apache.mahout:mahout-math:${mahout.version}</argument>
+                                <argument>--class</argument>
+                                <argument>com.sparkexample.recommendations.AnimeRecommendationsCCO</argument>
+                                <argument>${project.build.directory}/${project.artifactId}-${project.version}.jar</argument>
+                                <!-- program input arguments -->
+                                <argument>local[*]</argument><!-- master url -->
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>run-cluster</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>
+                                ${env.SPARK_HOME}/bin/spark-submit
+                            </executable>
+                            <arguments>
+                                <argument>--packages</argument>
+                                <argument>org.apache.mahout:mahout-spark_2.10:${mahout.version},org.apache.mahout:mahout-math:${mahout.version}</argument>
+                                <argument>--class</argument>
+                                <argument>com.sparkexample.recommendations.AnimeRecommendationsCCO</argument>
+                                <argument>${project.build.directory}/${project.artifactId}-${project.version}.jar</argument>
+                                <!-- program input arguments -->
+                                <argument>spark://master:7077</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

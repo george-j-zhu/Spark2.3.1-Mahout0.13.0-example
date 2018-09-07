@@ -12,15 +12,24 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spark.version>2.3.1</spark.version>
+        <scala.binary.version>2.11</scala.binary.version>
         <scala.version>2.11</scala.version>
+        <scala.fullversion>${scala.version}.8</scala.fullversion>
         <mahout.version>0.13.0</mahout.version>
-        <graphframes.version>0.5.0-spark2.1-s_${scala.version}</graphframes.version>
+        <fastutil.version>8.2.1</fastutil.version>
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.version}</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-mllib_${scala.version}</artifactId>
             <version>${spark.version}</version>
         </dependency>
 
@@ -30,23 +39,22 @@
             <version>${mahout.version}</version>
         </dependency>
 
-        <!-- Mahout Bindings -->
         <dependency>
             <groupId>org.apache.mahout</groupId>
-            <artifactId>mahout-spark_2.10</artifactId>
+            <artifactId>mahout-math-scala_${scala.version}</artifactId>
             <version>${mahout.version}</version>
         </dependency>
 
-	<dependency>
-    	    <groupId>org.apache.commons</groupId>
-    	    <artifactId>commons-math3</artifactId>
-    	    <version>3.2</version>
-	</dependency>
+        <dependency>
+            <groupId>org.apache.mahout</groupId>
+            <artifactId>mahout-spark_${scala.version}</artifactId>
+            <version>${mahout.version}</version>
+        </dependency>
 
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.22</version>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil</artifactId>
+            <version>${fastutil.version}</version>
         </dependency>
     </dependencies>
 
@@ -88,6 +96,7 @@
                 </executions>
                 <configuration>
                     <recompileMode>incremental</recompileMode>
+                    <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
                     <scalaVersion>${scala.version}</scalaVersion>
                     <jvmArgs>
                         <javacArg>-Xlint:unchecked</javacArg>
@@ -129,13 +138,13 @@
                                 ${env.SPARK_HOME}/bin/spark-submit
                             </executable>
                             <arguments>
+                                <argument>--master</argument>
+                                <argument>spark://master-node:7077</argument>
                                 <argument>--packages</argument>
-                                <argument>org.apache.mahout:mahout-spark_2.10:${mahout.version},org.apache.mahout:mahout-math:${mahout.version}</argument>
+                                <argument>org.apache.mahout:mahout-spark_${scala.version}:${mahout.version},org.apache.mahout:mahout-math:${mahout.version},org.apache.mahout:mahout-math-scala_${scala.version}:${mahout.version},it.unimi.dsi:fastutil:${fastutil.version}</argument>
                                 <argument>--class</argument>
                                 <argument>com.sparkexample.recommendations.AnimeRecommendationsCCO</argument>
                                 <argument>${project.build.directory}/${project.artifactId}-${project.version}.jar</argument>
-                                <!-- program input arguments -->
-                                <argument>local[*]</argument><!-- master url -->
                             </arguments>
                         </configuration>
                     </execution>
@@ -149,13 +158,13 @@
                                 ${env.SPARK_HOME}/bin/spark-submit
                             </executable>
                             <arguments>
+                                <argument>--master</argument>
+                                <argument>spark://master-node:7077</argument>
                                 <argument>--packages</argument>
-                                <argument>org.apache.mahout:mahout-spark_2.10:${mahout.version},org.apache.mahout:mahout-math:${mahout.version}</argument>
+                                <argument>org.apache.mahout:mahout-spark_${scala.version}:${mahout.version},org.apache.mahout:mahout-math:${mahout.version},org.apache.mahout:mahout-math-scala_${scala.version}:${mahout.version},it.unimi.dsi:fastutil:${fastutil.version}</argument>
                                 <argument>--class</argument>
                                 <argument>com.sparkexample.recommendations.AnimeRecommendationsCCO</argument>
                                 <argument>${project.build.directory}/${project.artifactId}-${project.version}.jar</argument>
-                                <!-- program input arguments -->
-                                <argument>spark://master:7077</argument>
                             </arguments>
                         </configuration>
                     </execution>

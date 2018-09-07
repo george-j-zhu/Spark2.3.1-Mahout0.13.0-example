@@ -1,12 +1,21 @@
 # Recommendation example with Apache Spark2.3.1 and Apache Mahout0.13.0
 
-As Apache Mahout0.13.0 is build on Scala2.10 which is no longer supported in Apache Spark since Ver2.0 and Mahout0.14.0 is still on the way,
-this is an example for playing Apache Mahout0.13.0 with the latest Apache Spark.
-I use Apache Mahout just as a distributed linear algebra here.
+As Apache Mahout0.13.0 is build on Scala2.10 which is no longer supported in Apache Spark2.x.
+we need to build mahout 0.13.0 in order to run with scala2.11 and Spark2.x.
 
+This is an example for Correlated Cross-Occurrence algorithm playing Apache Mahout0.13.0 with the latest Apache Spark.
 I will update this project when Apache Mahout0.14.0 comes up.
 
-## Build the project
+## Build Mahout0.13.0
+<pre>
+$ git clone http://github.com/apache/mahout
+$ cd mahout
+$ mvn clean install -Pscala-2.11,spark-2.1 -DskipTests
+</pre>
+or just download prebuilt mahout with Scala2.11 from<br>
+[https://github.com/heroku/predictionio-buildpack/tree/master/repo/org/apache/mahout](https://github.com/heroku/predictionio-buildpack/tree/master/repo/org/apache/mahout)
+
+## Build this repository
 ```
 $ mvn clean scala:compile package
 ```
@@ -25,4 +34,5 @@ $ mvn exec:exec@run-local
 ```
 $ mvn exec:exec@run-cluster
 ```
+
 Confirm that your master node has a hostname as 'master' or you need to change the master url specifiled in pom.xml
